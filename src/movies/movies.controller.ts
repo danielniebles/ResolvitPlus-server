@@ -1,12 +1,12 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 
 @Controller('movies')
 export class MoviesController {
   constructor(private readonly moviesService: MoviesService) {}
 
-  @Get(':movieType')
-  getHello(): string {
-    return this.moviesService.getHello();
+  @Get(':type')
+  getMovies(@Param() params): any {
+    return this.moviesService.getMoviesByType(params.type);
   }
 }
