@@ -12,7 +12,7 @@ export class MoviesRepository {
     return lastValueFrom(
       this.httpService
         .get(`https://api.themoviedb.org/3/movie/${queryType}?page=${page}`, {
-          headers: { Authorization: `Bearer ${process.env.IMG_API_TOKEN}` },
+          headers: { Authorization: `Bearer ${process.env.MOVIES_API_TOKEN}` },
         })
         .pipe(map((response) => response.data.results)),
     );
@@ -22,7 +22,7 @@ export class MoviesRepository {
     return lastValueFrom(
       this.httpService
         .get(`https://api.themoviedb.org/3/movie/${movieId}/images`, {
-          headers: { Authorization: `Bearer ${process.env.IMG_API_TOKEN}` },
+          headers: { Authorization: `Bearer ${process.env.MOVIES_API_TOKEN}` },
         })
         .pipe(map((response) => response.data)),
     );
@@ -34,7 +34,9 @@ export class MoviesRepository {
         .get(
           `https://api.themoviedb.org/3/search/movie?query=${keyword}&page=${page}`,
           {
-            headers: { Authorization: `Bearer ${process.env.IMG_API_TOKEN}` },
+            headers: {
+              Authorization: `Bearer ${process.env.MOVIES_API_TOKEN}`,
+            },
           },
         )
         .pipe(map((response) => response.data.results)),
@@ -47,7 +49,9 @@ export class MoviesRepository {
         .get(
           `https://api.themoviedb.org/3/discover/movie?with_genres=${genres}&page=${page}`,
           {
-            headers: { Authorization: `Bearer ${process.env.IMG_API_TOKEN}` },
+            headers: {
+              Authorization: `Bearer ${process.env.MOVIES_API_TOKEN}`,
+            },
           },
         )
         .pipe(map((response) => response.data.results)),
