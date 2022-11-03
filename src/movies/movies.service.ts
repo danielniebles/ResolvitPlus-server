@@ -1,5 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { GenresService } from 'src/genres/genres.service';
+import { Response } from 'src/shared/interfaces/Response';
+import { RawMovie } from './interfaces/RawMovie';
 import { MoviesRepository } from './movies.repository';
 
 @Injectable()
@@ -9,8 +11,11 @@ export class MoviesService {
     private readonly genresService: GenresService,
   ) {}
 
-  async getBasicMoviesByType(queryType: string, page: number): Promise<any> {
-    const response: any = await this.moviesRepository.getMovies({
+  async getBasicMoviesByType(
+    queryType: string,
+    page: number,
+  ): Promise<Response<RawMovie[]>> {
+    const response = await this.moviesRepository.getMovies({
       queryType,
       page,
     });
@@ -22,17 +27,20 @@ export class MoviesService {
     };
   }
 
-  async getExtendedMoviesByType(queryType: string, page: number): Promise<any> {
-    const response: any = await this.moviesRepository.getMovies({
+  async getExtendedMoviesByType(
+    queryType: string,
+    page: number,
+  ): Promise<Response<RawMovie[]>> {
+    const response = await this.moviesRepository.getMovies({
       queryType,
       page,
     });
     const extendedMovies = [];
 
-    for (let i = 0; i < response.results.length; i++) {
-      const images = await this.getMovieImages({ id: response.results[i].id });
+    for (let i = 0; i < response.length; i++) {
+      const images = await this.getMovieImages({ id: response[i].id });
       extendedMovies.push({
-        ...response.results[i],
+        ...response[i],
         images,
       });
     }
@@ -49,7 +57,10 @@ export class MoviesService {
     });
   }
 
-  async getMoviesByKeyword(keyword: string, page: number) {
+  async getMoviesByKeyword(
+    keyword: string,
+    page: number,
+  ): Promise<Response<RawMovie[]>> {
     const response: any = await this.moviesRepository.getMoviesByKeyword({
       keyword,
       page,
@@ -62,7 +73,10 @@ export class MoviesService {
     };
   }
 
-  async getMoviesByParams(genres: number, page: number) {
+  async getMoviesByParams(
+    genres: number,
+    page: number,
+  ): Promise<Response<RawMovie[]>> {
     const response: any = await this.moviesRepository.getMoviesByParams({
       genres,
       page,
@@ -78,7 +92,7 @@ export class MoviesService {
   private async extendMovieGenres(response) {
     const { data: genres } = await this.genresService.getGenres();
 
-    return response.results.reduce((acc, movie) => {
+    return response.reduce((acc, movie) => {
       const extendedGenres = movie.genre_ids.map((id) =>
         genres.find((genre) => genre.id === id),
       );

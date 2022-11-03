@@ -1,24 +1,24 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { Movie } from './movies.model';
 import { lastValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { RawMovie } from './interfaces/RawMovie';
 
 @Injectable()
 export class MoviesRepository {
   constructor(private readonly httpService: HttpService) {}
 
-  getMovies({ queryType, page }): Promise<Movie[]> {
+  getMovies({ queryType, page }): Promise<RawMovie[]> {
     return lastValueFrom(
       this.httpService
         .get(`https://api.themoviedb.org/3/movie/${queryType}?page=${page}`, {
           headers: { Authorization: `Bearer ${process.env.IMG_API_TOKEN}` },
         })
-        .pipe(map((response) => response.data)),
+        .pipe(map((response) => response.data.results)),
     );
   }
 
-  getMovieImages({ movieId }): Promise<Movie[]> {
+  getMovieImages({ movieId }): Promise<RawMovie[]> {
     return lastValueFrom(
       this.httpService
         .get(`https://api.themoviedb.org/3/movie/${movieId}/images`, {
@@ -28,7 +28,7 @@ export class MoviesRepository {
     );
   }
 
-  getMoviesByKeyword({ keyword, page }) {
+  getMoviesByKeyword({ keyword, page }): Promise<RawMovie[]> {
     return lastValueFrom(
       this.httpService
         .get(
@@ -37,11 +37,11 @@ export class MoviesRepository {
             headers: { Authorization: `Bearer ${process.env.IMG_API_TOKEN}` },
           },
         )
-        .pipe(map((response) => response.data)),
+        .pipe(map((response) => response.data.results)),
     );
   }
 
-  getMoviesByParams({ genres, page }) {
+  getMoviesByParams({ genres, page }): Promise<RawMovie[]> {
     return lastValueFrom(
       this.httpService
         .get(
@@ -50,7 +50,7 @@ export class MoviesRepository {
             headers: { Authorization: `Bearer ${process.env.IMG_API_TOKEN}` },
           },
         )
-        .pipe(map((response) => response.data)),
+        .pipe(map((response) => response.data.results)),
     );
   }
 }
