@@ -15,40 +15,48 @@ export class MoviesService {
     queryType: string,
     page: number,
   ): Promise<Response<RawMovie[]>> {
-    const response = await this.moviesRepository.getMovies({
-      queryType,
-      page,
-    });
-    const moviesWithExtendedGenres = await this.extendMovieGenres(response);
+    try {
+      const response = await this.moviesRepository.getMovies({
+        queryType,
+        page,
+      });
+      const moviesWithExtendedGenres = await this.extendMovieGenres(response);
 
-    return {
-      data: moviesWithExtendedGenres,
-      code: HttpStatus.OK,
-    };
+      return {
+        data: moviesWithExtendedGenres,
+        code: HttpStatus.OK,
+      };
+    } catch (error) {
+      throw new Error('Failed to get movies');
+    }
   }
 
   async getExtendedMoviesByType(
     queryType: string,
     page: number,
   ): Promise<Response<RawMovie[]>> {
-    const response = await this.moviesRepository.getMovies({
-      queryType,
-      page,
-    });
-    const extendedMovies = [];
-
-    for (let i = 0; i < response.length; i++) {
-      const images = await this.getMovieImages({ id: response[i].id });
-      extendedMovies.push({
-        ...response[i],
-        images,
+    try {
+      const response = await this.moviesRepository.getMovies({
+        queryType,
+        page,
       });
-    }
+      const extendedMovies = [];
 
-    return {
-      data: extendedMovies,
-      code: HttpStatus.OK,
-    };
+      for (let i = 0; i < response.length; i++) {
+        const images = await this.getMovieImages({ id: response[i].id });
+        extendedMovies.push({
+          ...response[i],
+          images,
+        });
+      }
+
+      return {
+        data: extendedMovies,
+        code: HttpStatus.OK,
+      };
+    } catch (error) {
+      throw new Error('Failed to extend movies');
+    }
   }
 
   async getMovieImages({ id }) {
@@ -61,32 +69,55 @@ export class MoviesService {
     keyword: string,
     page: number,
   ): Promise<Response<RawMovie[]>> {
-    const response: any = await this.moviesRepository.getMoviesByKeyword({
-      keyword,
-      page,
-    });
-    const moviesWithExtendedGenres = await this.extendMovieGenres(response);
+    try {
+      const response: any = await this.moviesRepository.getMoviesByKeyword({
+        keyword,
+        page,
+      });
+      const moviesWithExtendedGenres = await this.extendMovieGenres(response);
 
-    return {
-      data: moviesWithExtendedGenres,
-      code: HttpStatus.OK,
-    };
+      return {
+        data: moviesWithExtendedGenres,
+        code: HttpStatus.OK,
+      };
+    } catch (error) {
+      throw new Error('Failed to get movie by keyword');
+    }
   }
 
   async getMoviesByParams(
     genres: number,
     page: number,
   ): Promise<Response<RawMovie[]>> {
-    const response: any = await this.moviesRepository.getMoviesByParams({
-      genres,
-      page,
-    });
-    const moviesWithExtendedGenres = await this.extendMovieGenres(response);
+    try {
+      const response: any = await this.moviesRepository.getMoviesByParams({
+        genres,
+        page,
+      });
+      const moviesWithExtendedGenres = await this.extendMovieGenres(response);
 
-    return {
-      data: moviesWithExtendedGenres,
-      code: HttpStatus.OK,
-    };
+      return {
+        data: moviesWithExtendedGenres,
+        code: HttpStatus.OK,
+      };
+    } catch (error) {
+      throw new Error('Failed to get movie params');
+    }
+  }
+
+  async getMovieById(movieId: number): Promise<Response<RawMovie>> {
+    try {
+      const response = await this.moviesRepository.getMovieById({
+        movieId,
+      });
+
+      return {
+        data: response,
+        code: HttpStatus.OK,
+      };
+    } catch (error) {
+      throw new Error('Failed to get movie by id');
+    }
   }
 
   private async extendMovieGenres(response) {

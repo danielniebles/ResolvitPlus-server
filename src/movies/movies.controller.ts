@@ -24,4 +24,9 @@ export class MoviesController {
   getMoviesByParams(@Query('withGenres') search, @Query('page') page) {
     return this.moviesService.getMoviesByKeyword(search, page);
   }
+
+  @Get(':id')
+  getMovieById(@Param() params) {
+    return this.moviesService.getMovieById(params.id);
+  }
 }

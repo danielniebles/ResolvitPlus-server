@@ -25,10 +25,7 @@ export class GenresService {
         code: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        data: error,
-        code: HttpStatus.BAD_REQUEST,
-      };
+      throw new Error('Failed to get genres');
     }
   }
 }

@@ -57,4 +57,16 @@ export class MoviesRepository {
         .pipe(map((response) => response.data.results)),
     );
   }
+
+  getMovieById({ movieId }): Promise<RawMovie> {
+    return lastValueFrom(
+      this.httpService
+        .get(`https://api.themoviedb.org/3/movie/${movieId}`, {
+          headers: {
+            Authorization: `Bearer ${process.env.MOVIES_API_TOKEN}`,
+          },
+        })
+        .pipe(map((response) => response.data)),
+    );
+  }
 }
