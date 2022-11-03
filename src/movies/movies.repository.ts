@@ -8,12 +8,48 @@ import { map } from 'rxjs/operators';
 export class MoviesRepository {
   constructor(private readonly httpService: HttpService) {}
 
-  getMovies({ queryType }): Promise<Movie[]> {
+  getMovies({ queryType, page }): Promise<Movie[]> {
     return lastValueFrom(
       this.httpService
-        .get(`https://api.themoviedb.org/3/movie/${queryType}`, {
+        .get(`https://api.themoviedb.org/3/movie/${queryType}?page=${page}`, {
           headers: { Authorization: `Bearer ${process.env.IMG_API_TOKEN}` },
         })
+        .pipe(map((response) => response.data)),
+    );
+  }
+
+  getMovieImages({ movieId }): Promise<Movie[]> {
+    return lastValueFrom(
+      this.httpService
+        .get(`https://api.themoviedb.org/3/movie/${movieId}/images`, {
+          headers: { Authorization: `Bearer ${process.env.IMG_API_TOKEN}` },
+        })
+        .pipe(map((response) => response.data)),
+    );
+  }
+
+  getMoviesByKeyword({ keyword, page }) {
+    return lastValueFrom(
+      this.httpService
+        .get(
+          `https://api.themoviedb.org/3/search/movie?query=${keyword}&page=${page}`,
+          {
+            headers: { Authorization: `Bearer ${process.env.IMG_API_TOKEN}` },
+          },
+        )
+        .pipe(map((response) => response.data)),
+    );
+  }
+
+  getMoviesByParams({ genres, page }) {
+    return lastValueFrom(
+      this.httpService
+        .get(
+          `https://api.themoviedb.org/3/discover/movie?with_genres=${genres}&page=${page}`,
+          {
+            headers: { Authorization: `Bearer ${process.env.IMG_API_TOKEN}` },
+          },
+        )
         .pipe(map((response) => response.data)),
     );
   }
